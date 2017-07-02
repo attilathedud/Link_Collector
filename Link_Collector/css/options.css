@@ -1,0 +1,12 @@
+body {
+	min-width: 260px;
+}
+
+.title {
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.anchor-bottom {
+    margin-bottom: 0 !important;
+}
