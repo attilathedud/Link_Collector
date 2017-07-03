@@ -1,19 +1,29 @@
+// The injected script is responsible for all the internal logic of the extension.
 ( function() {
     "use strict";
 
+    // Panel and link_panel contain the DOM node created on app init.
     var panel;
     var link_panel;
 
+    // Used for displaying the alt_code.
     var os_code = '';
 
+    // Used to ensure keybinds only execute when the panel is active.
     var is_panel_showing = false;
 
+    // The current result set being displayed.
     var cur_index = 0;
+
+    // How many entries are navigated on left/right, up/down.
     var page_low_amount = 10;
     var page_high_amount = 50;
 
+    // Our current search term.
     var filter_input = '';
 
+    // Given an array of elements, return an array with all duplicates removed.
+    // The native EC6 filter methods cause noticable lag with arrays with > 2000 entries.
     function remove_duplicates( arr ) {
         var temp_map = {};
         var temp_arr = [];
@@ -30,6 +40,7 @@
         return temp_arr;
     }
 
+    // Returns an array with all unique links on a page with filter_input applied.
     function retrieve_page_links( ) {
         var all_links = Array.from( document.querySelectorAll( 'a ') );
         all_links = remove_duplicates( all_links );
@@ -43,6 +54,7 @@
         return all_links;
     }
 
+    // Given our current index, disable/enable the navigation feedback arrows.
     function toggle_arrow_visibility() {
         var all_links = retrieve_page_links( );
 
@@ -62,6 +74,7 @@
         }
     }
 
+    // Create our link panel inside the page.
     function create_link_panel( ) {
         panel = document.createElement( 'div' );
         panel.className = 'collector-panel';
@@ -114,6 +127,7 @@
         document.getElementsByClassName( 'right-arrow-panel' )[ 0 ].style.height = document.getElementsByClassName( 'collector-panel' )[ 0 ].clientHeight - 40 + "px";
     }
 
+    // Append the links on the page to our parent panel.
     function create_links_shown_panel( index ) {
         link_panel = document.createElement( 'div' );
         link_panel.className = 'link-collector-panel';
@@ -143,6 +157,7 @@
         panel.appendChild( link_panel );
     }
 
+    // Toggle the panel visibile/hidden.
     function toggle_panel( ) {
         if( is_panel_showing ) {
             document.body.removeChild( panel );
@@ -160,22 +175,26 @@
         is_panel_showing = !is_panel_showing;
     }
 
+    // On a context_menu message from the background, toggle the panel.
     chrome.extension.onMessage.addListener( function ( message, sender, callback ) {
         if ( message.function == "context_menu_clicked" ) {
             toggle_panel( );
         }   
     });
 
+    // On Alt+i, toggle the panel.
     Mousetrap.bind('alt+i', function() {
         toggle_panel( );
     });
 
+    // On alt+num, grab the num and navigate to the entry selected.
     Mousetrap.bind(['alt+0', 'alt+1', 'alt+2', 'alt+3', 'alt+4', 'alt+5', 'alt+6', 'alt+7', 'alt+8', 'alt+9' ], function( e, combo ) {
         var index_selected = combo.substr( combo.indexOf("+") + 1 );
 
         window.location = document.getElementsByClassName('collector-link')[ index_selected ].href;
     });
 
+    // On left/right, offset the results displayed by page_low_amount.
     Mousetrap.bind([ 'alt+right', 'alt+left' ], function( e, combo ) {
         if( is_panel_showing ) {
             if( combo == 'alt+left' && cur_index - page_low_amount >= 0 ) {
@@ -198,6 +217,7 @@
         }
     });
 
+     // On up/down, offset the results displayed by page_high_amount.
     Mousetrap.bind([ 'alt+up', 'alt+down' ], function( e, combo ) {
         if( is_panel_showing ) {
             if( combo == 'alt+up' ) {
@@ -232,6 +252,7 @@
         }
     });
 
+    // On alt+f, toggle the vis of the filter input box.
     Mousetrap.bind( 'alt+f', function() {
         if( is_panel_showing ) {
             if( document.getElementsByClassName( 'find-panel' + os_code )[ 0 ].style.display == 'none' ) {
@@ -254,6 +275,7 @@
         }
     });
 
+    // On alt+enter, apply the filter_input over the links.
     Mousetrap.bind( 'alt+enter', function() {
         if( is_panel_showing ) {
             filter_input = document.getElementsByClassName( 'find-panel-input' )[ 0 ].value;

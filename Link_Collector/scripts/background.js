@@ -1,3 +1,5 @@
+// The background script is responsible only for dealing with the context-menu entry
+// and sending requests to the injected script.
 ( function() {
     "use strict";
 
