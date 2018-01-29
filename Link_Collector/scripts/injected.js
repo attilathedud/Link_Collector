@@ -175,16 +175,11 @@
         is_panel_showing = !is_panel_showing;
     }
 
-    // On a context_menu message from the background, toggle the panel.
+    // On a context_menu message from the background or the toggle_panel command, toggle the panel.
     chrome.extension.onMessage.addListener( function ( message, sender, callback ) {
-        if ( message.function == "context_menu_clicked" ) {
+        if ( message.function == "context_menu_clicked" || message.function == "toggle_panel" ) {
             toggle_panel( );
         }   
-    });
-
-    // On Alt+i, toggle the panel.
-    Mousetrap.bind('alt+i', function() {
-        toggle_panel( );
     });
 
     // On alt+num, grab the num and navigate to the entry selected.

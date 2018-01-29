@@ -29,5 +29,11 @@
     "browser_action" : {
         "name"  : "Link Collector",
         "default_popup": "pages/popup_settings.html"
-    }
+    },
+    "commands": {
+        "toggle_panel": {
+           "description": "Toggle the display of the panel",
+           "suggested_key": "Alt+I"
+        }
+     }
 }
