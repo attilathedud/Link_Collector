@@ -157,6 +157,28 @@
         panel.appendChild( link_panel );
     }
 
+    function page_results_low(combo) {
+        if( is_panel_showing ) {
+            if( combo == 'alt+left' && cur_index - page_low_amount >= 0 ) {
+                cur_index -= page_low_amount;
+            }
+            else if( combo == 'alt+right' ) {
+                var all_links = retrieve_page_links( );
+
+                if( cur_index + page_low_amount < all_links.length ) {
+                    cur_index += page_low_amount;
+                }
+            }
+
+            panel.removeChild( link_panel );
+            create_links_shown_panel( cur_index );
+
+            toggle_arrow_visibility( );
+
+            return false;
+        }
+    }
+
     // Toggle the panel visibile/hidden.
     function toggle_panel( ) {
         if( is_panel_showing ) {
@@ -167,6 +189,14 @@
 
             document.getElementsByClassName( 'close-panel' )[ 0 ].onclick = function() {
                 toggle_panel( );
+            };
+
+            document.getElementsByClassName( 'left-arrow-panel' )[ 0 ].onclick = function() {
+                page_results_low('alt+left')
+            };
+
+            document.getElementsByClassName( 'right-arrow-panel' )[ 0 ].onclick = function() {
+                page_results_low('alt+right')
             };
 
             toggle_arrow_visibility( );
@@ -191,25 +221,7 @@
 
     // On left/right, offset the results displayed by page_low_amount.
     Mousetrap.bind([ 'alt+right', 'alt+left' ], function( e, combo ) {
-        if( is_panel_showing ) {
-            if( combo == 'alt+left' && cur_index - page_low_amount >= 0 ) {
-                cur_index -= page_low_amount;
-            }
-            else if( combo == 'alt+right' ) {
-                var all_links = retrieve_page_links( );
-
-                if( cur_index + page_low_amount < all_links.length ) {
-                    cur_index += page_low_amount;
-                }
-            }
-
-            panel.removeChild( link_panel );
-            create_links_shown_panel( cur_index );
-
-            toggle_arrow_visibility( );
-
-            return false;
-        }
+        page_results_low(combo);
     });
 
      // On up/down, offset the results displayed by page_high_amount.
