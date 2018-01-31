@@ -157,28 +157,6 @@
         panel.appendChild( link_panel );
     }
 
-    function page_results_low(combo) {
-        if( is_panel_showing ) {
-            if( combo == 'alt+left' && cur_index - page_low_amount >= 0 ) {
-                cur_index -= page_low_amount;
-            }
-            else if( combo == 'alt+right' ) {
-                var all_links = retrieve_page_links( );
-
-                if( cur_index + page_low_amount < all_links.length ) {
-                    cur_index += page_low_amount;
-                }
-            }
-
-            panel.removeChild( link_panel );
-            create_links_shown_panel( cur_index );
-
-            toggle_arrow_visibility( );
-
-            return false;
-        }
-    }
-
     // Toggle the panel visibile/hidden.
     function toggle_panel( ) {
         if( is_panel_showing ) {
@@ -214,14 +192,36 @@
 
     // On alt+num, grab the num and navigate to the entry selected.
     Mousetrap.bind(['alt+0', 'alt+1', 'alt+2', 'alt+3', 'alt+4', 'alt+5', 'alt+6', 'alt+7', 'alt+8', 'alt+9' ], function( e, combo ) {
-        var index_selected = combo.substr( combo.indexOf("+") + 1 );
+        if( is_panel_showing ) {
+            var index_selected = combo.substr( combo.indexOf("+") + 1 );
 
-        window.location = document.getElementsByClassName('collector-link')[ index_selected ].href;
+            window.location = document.getElementsByClassName('collector-link')[ index_selected ].href;
+        
+            return false;
+        }
     });
 
     // On left/right, offset the results displayed by page_low_amount.
     Mousetrap.bind([ 'alt+right', 'alt+left' ], function( e, combo ) {
-        page_results_low(combo);
+        if( is_panel_showing ) {
+            if( combo == 'alt+left' && cur_index - page_low_amount >= 0 ) {
+                cur_index -= page_low_amount;
+            }
+            else if( combo == 'alt+right' ) {
+                var all_links = retrieve_page_links( );
+
+                if( cur_index + page_low_amount < all_links.length ) {
+                    cur_index += page_low_amount;
+                }
+            }
+
+            panel.removeChild( link_panel );
+            create_links_shown_panel( cur_index );
+
+            toggle_arrow_visibility( );
+
+            return false;
+        }
     });
 
      // On up/down, offset the results displayed by page_high_amount.
@@ -293,6 +293,8 @@
             create_links_shown_panel( cur_index );
 
             toggle_arrow_visibility( );
+
+            return false;
         }
     });
 })();
