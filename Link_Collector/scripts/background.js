@@ -40,6 +40,17 @@
             var storageChange = changes[key];
     
             options[ key ] = storageChange.newValue;
+
+            if( options[ 'activated'] ) {
+                chrome.browserAction.setIcon({
+                    path: "../imgs/icon16.png"
+                });
+            }
+            else {
+                chrome.browserAction.setIcon({
+                    path: "../imgs/icon16_disabled.png"
+                });
+            }
         }
     });
 })();
