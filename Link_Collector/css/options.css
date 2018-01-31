@@ -1,12 +1,15 @@
 body {
-	min-width: 260px;
-}
-
-.title {
-    margin-top: 5%;
-    margin-bottom: 5%;
+    min-width: 240px;
+    margin-top: 10px;
 }
 
 .anchor-bottom {
     margin-bottom: 0 !important;
 }
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  

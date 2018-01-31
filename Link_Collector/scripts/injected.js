@@ -183,6 +183,28 @@
         is_panel_showing = !is_panel_showing;
     }
 
+    function page_results_low(combo) {
+        if( is_panel_showing ) {
+            if( combo == 'alt+left' && cur_index - page_low_amount >= 0 ) {
+                cur_index -= page_low_amount;
+            }
+            else if( combo == 'alt+right' ) {
+                var all_links = retrieve_page_links( );
+
+                if( cur_index + page_low_amount < all_links.length ) {
+                    cur_index += page_low_amount;
+                }
+            }
+
+            panel.removeChild( link_panel );
+            create_links_shown_panel( cur_index );
+
+            toggle_arrow_visibility( );
+
+            return false;
+        }
+    }
+
     // On a context_menu message from the background or the toggle_panel command, toggle the panel.
     chrome.extension.onMessage.addListener( function ( message, sender, callback ) {
         if ( message.function == "context_menu_clicked" || message.function == "toggle_panel" ) {
@@ -203,25 +225,7 @@
 
     // On left/right, offset the results displayed by page_low_amount.
     Mousetrap.bind([ 'alt+right', 'alt+left' ], function( e, combo ) {
-        if( is_panel_showing ) {
-            if( combo == 'alt+left' && cur_index - page_low_amount >= 0 ) {
-                cur_index -= page_low_amount;
-            }
-            else if( combo == 'alt+right' ) {
-                var all_links = retrieve_page_links( );
-
-                if( cur_index + page_low_amount < all_links.length ) {
-                    cur_index += page_low_amount;
-                }
-            }
-
-            panel.removeChild( link_panel );
-            create_links_shown_panel( cur_index );
-
-            toggle_arrow_visibility( );
-
-            return false;
-        }
+        page_results_low(combo);
     });
 
      // On up/down, offset the results displayed by page_high_amount.

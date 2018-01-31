@@ -2,33 +2,44 @@
 (function () {
     "use strict";
 
-    function send_signal(tab_id, signal_name) {
-        if( tab_id === -1 ) {
-            chrome.tabs.query({
-                "active": true,
-                "currentWindow": true
-            }, function (tabs) {
-                tab_id = tabs[0].id;
-    
-                chrome.tabs.sendMessage(tab_id, {
-                    "function": signal_name
-                });
-            });
-        }
-        else {
-            chrome.tabs.sendMessage(tab_id, {
-                "function": signal_name
-            });
-        }
-    }
+    var options = {
+        'activated' : true
+    };
 
-    chrome.contextMenus.create({"title": "Link Collector", "contexts": ["all"], 
-        "onclick": function (info, tab) {
-            send_signal( tab.id, "context_menu_clicked" );
+    chrome.storage.local.get( options, function ( items ) {
+        for( var key in items ) {
+            options[ key ] = items[ key ];
         }
+
+        chrome.contextMenus.create({"title": "Link Collector", "contexts": ["all"], 
+            "onclick": function (info, tab) {
+                chrome.tabs.sendMessage(tab.id, {
+                    "function": "context_menu_clicked"
+                });
+            }
+        });
+    
+        chrome.commands.onCommand.addListener(function (command) {
+            if( options['activated'] ) {
+                chrome.tabs.query({
+                    "active": true,
+                    "currentWindow": true
+                }, function (tabs) {
+                    var tab_id = tabs[0].id;
+        
+                    chrome.tabs.sendMessage(tab_id, {
+                        "function": command
+                    });
+                });
+            }
+        });
     });
 
-    chrome.commands.onCommand.addListener(function (command) {
-        send_signal(-1, command);
+    chrome.storage.onChanged.addListener( function( changes, namespace ) {
+        for (var key in changes) {
+            var storageChange = changes[key];
+    
+            options[ key ] = storageChange.newValue;
+        }
     });
 })();
